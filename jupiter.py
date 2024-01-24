@@ -104,7 +104,8 @@ class Moons:
         # Create DataFrame for modeling
         modeling_data = self.data[["moon", "T2", "a3"]]
         return modeling_data
-        # Train a linear regression model using train_test_split
+    
+    # Train a linear regression model using train_test_split
     def train_model(self, modeling_data):
         X = modeling_data[["T2"]]
         y = modeling_data["a3"]
@@ -126,6 +127,24 @@ class Moons:
         # Print results and visualize residuals (optional)
         print("Mean Squared Error (testing set):", mse)
         print("R-squared (testing set):", r_squared)
+          
+    # Calculate and display estimated Jupiter's mass, differences from literature, and Jupiter-to-Earth mass ratio
+    def estimate_jupiter_mass(self, model):        
+        jupiter_mass_kg = (4 * (np.pi ** 2)) * model.coef_[0] / self.G
+
+        # Comparison with literature value and with Earth
+        literature_jupiter_mass_kg = 1.8982e27  # From [Source reference]
+        literature_earth_mass_kg = 5.972e24  # Define Earth's mass in kg
+
+        absolute_difference = abs(jupiter_mass_kg - literature_jupiter_mass_kg)
+        percentage_difference = (absolute_difference / literature_jupiter_mass_kg) * 100
+
+        print("Estimated Jupiter mass:", jupiter_mass_kg, "kg")
+        print("Difference from literature:", absolute_difference, "kg")
+        print("Percentage difference:", percentage_difference, "%")
+
+        estimated_jupiter_earth_ratio = jupiter_mass_kg / literature_earth_mass_kg
+        print(f"Estimated Jupiter-to-Earth mass ratio: {estimated_jupiter_earth_ratio:.2f}")   
 
 
 
