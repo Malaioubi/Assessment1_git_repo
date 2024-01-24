@@ -9,30 +9,40 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 
 class Moons:
-    
+
+    # Constructor to initialize the object
     def __init__(self, database_path):
         self.conn = sqlite3.connect(database_path)
         self.load_data()  # Load moon data from the database
         self.define_constants()  # Define constants including gravitational constant and moon mass
-      
+
+    # Destructor to ensure the database connection is closed when the object is deleted
     def __del__(self):
-        self.conn.close()    
-        
+        self.conn.close()
+
+    # Load moon data from the database
+    def load_data(self):
+        self.data = pd.read_sql_query("SELECT * FROM moons", self.conn)
+
+    # Define constants, including gravitational constant and moon mass
     def define_constants(self):
         self.G = 6.67e-11
         # Calculate moon mass using Kepler's Third Law and add an "estimated_mass" column to the data frame
         self.data["estimated_mass"] = (4 * np.pi**2 * self.data["distance_km"]**3) / (self.data["period_days"]**2 * self.G)
-        
-# Methods for exploratory analysis:
+    
+    # Methods for exploratory analysis:
+
+    # Calculate and display summary statistics for numerical columns
     def summary_statistics(self):
         numerical_cols = self.data.select_dtypes(include=['number'])
-        sns.set_theme(style="whitegrid", palette="pastel")  # Set a visually appealing theme
+        sns.set_theme(style="darkgrid")  # Set a visually appealing theme
 
         for col in numerical_cols:
             sns.histplot(data=self.data, x=col)
             plt.title(f"Distribution of {col}")
             plt.show()
-            
+
+    # Calculate and display correlations between numerical columns
     def correlations(self):
         correlations = self.data.corr(numeric_only=True)
         sns.set_theme(style="darkgrid")  # Set a visually appealing theme
@@ -47,7 +57,8 @@ class Moons:
         )
         plt.title("Correlation Heatmap")
         plt.show()
-        
+
+    # Provide descriptive information about a specified column
     def describe_column(self, column_name):
         if column_name in self.data.columns:
             column = self.data[column_name]
@@ -73,16 +84,11 @@ class Moons:
         print("Moon Items:")
         for moon in moons:
             print(moon)
-            
-    def extract_moon_data(self, moon):
-        moon_data = self.data[self.data["moon"] == moon]
-        return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualization of data
 
+    # Generate a scatter plot of two specified columns
     def scatter_plot(self, x_column, y_column):
-        sns.set_theme(style="whitegrid", palette="pastel")
         plt.figure(figsize=(8, 6))  # Set appropriate figure size
         plt.scatter(self.data[x_column], self.data[y_column])
-        sns.regplot(x=self.data[x_column], y=self.data[y_column], scatter=False, color='red')
 
         # Label axes and add title
         plt.xlabel(x_column.capitalize())
@@ -90,9 +96,14 @@ class Moons:
         plt.title(f"Scatter Plot of {y_column} vs. {x_column}")
 
         plt.grid(True)  # Add grid for better readability
-        plt.show()
+        plt.show()  # Display the plot
 
-# Estimation of Jupiter's mass:
+    # Extract data for a specific moon
+    def extract_moon_data(self, moon):
+        moon_data = self.data[self.data["moon"] == moon]
+        return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualisation of data
+
+    # Estimation of Jupiter's mass:
 
     # Prepare data for modeling
     def prepare_data(self):
@@ -104,7 +115,7 @@ class Moons:
         # Create DataFrame for modeling
         modeling_data = self.data[["moon", "T2", "a3"]]
         return modeling_data
-    
+
     # Train a linear regression model using train_test_split
     def train_model(self, modeling_data):
         X = modeling_data[["T2"]]
@@ -127,7 +138,7 @@ class Moons:
         # Print results and visualize residuals (optional)
         print("Mean Squared Error (testing set):", mse)
         print("R-squared (testing set):", r_squared)
-          
+
     # Calculate and display estimated Jupiter's mass, differences from literature, and Jupiter-to-Earth mass ratio
     def estimate_jupiter_mass(self, model):        
         jupiter_mass_kg = (4 * (np.pi ** 2)) * model.coef_[0] / self.G
@@ -145,7 +156,3 @@ class Moons:
 
         estimated_jupiter_earth_ratio = jupiter_mass_kg / literature_earth_mass_kg
         print(f"Estimated Jupiter-to-Earth mass ratio: {estimated_jupiter_earth_ratio:.2f}")   
-
-
-
-
