@@ -89,6 +89,7 @@ class Moons:
     def scatter_plot(self, x_column, y_column):
         plt.figure(figsize=(8, 6))  # Set appropriate figure size
         plt.scatter(self.data[x_column], self.data[y_column])
+        sns.regplot(x=self.data[x_column], y=self.data[y_column], scatter=False, color='red')
 
         # Label axes and add title
         plt.xlabel(x_column.capitalize())
