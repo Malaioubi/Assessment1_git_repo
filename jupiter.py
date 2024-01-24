@@ -140,6 +140,7 @@ class Moons:
         """
         plt.figure(figsize=(8, 6))  # Set appropriate figure size
         plt.scatter(self.data[x_column], self.data[y_column])
+        sns.regplot(x=self.data[x_column], y=self.data[y_column], scatter=False, color='red')
 
         # Label axes and add title
         plt.xlabel(x_column.capitalize())
@@ -237,4 +238,4 @@ class Moons:
         print("Percentage difference:", percentage_difference, "%")
 
         estimated_jupiter_earth_ratio = jupiter_mass_kg / literature_earth_mass_kg
-        print(f"Estimated Jupiter-to-Earth mass ratio: {estimated_jupiter_earth_ratio:.2f}")    
+        print(f"Estimated Jupiter-to-Earth mass ratio: {estimated_jupiter_earth_ratio:.2f}")  
