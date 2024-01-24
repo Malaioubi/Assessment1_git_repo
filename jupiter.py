@@ -22,7 +22,8 @@ class Moons:
         self.G = 6.67e-11
         # Calculate moon mass using Kepler's Third Law and add an "estimated_mass" column to the data frame
         self.data["estimated_mass"] = (4 * np.pi**2 * self.data["distance_km"]**3) / (self.data["period_days"]**2 * self.G)
-   
+        
+# Methods for exploratory analysis:
     def summary_statistics(self):
         numerical_cols = self.data.select_dtypes(include=['number'])
         sns.set_theme(style="whitegrid", palette="pastel")  # Set a visually appealing theme
