@@ -9,41 +9,78 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 
 class Moons:
+    """
+    Class for analyzing moon data and estimating Jupiter's mass.
 
-    # Constructor to initialize the object
-    def __init__(self, database_path):
+    Attributes:
+        conn (sqlite3.Connection): Connection to the SQLite database.
+        data (pd.DataFrame): DataFrame containing moon data.
+        G (float): Gravitational constant.
+
+    Methods:
+        __init__(database_path: str)
+        __del__()
+        load_data()
+        define_constants()
+        summary_statistics()
+        correlations()
+        describe_column(column_name: str)
+        display_moons()
+        scatter_plot(x_column: str, y_column: str)
+        extract_moon_data(moon: str) -> pd.Series
+        prepare_data() -> pd.DataFrame
+        train_model(modeling_data: pd.DataFrame) -> Tuple[LinearRegression, pd.DataFrame, pd.Series]
+        evaluate_model(model: LinearRegression, X_test: pd.DataFrame, y_test: pd.Series)
+        estimate_jupiter_mass(model: LinearRegression)
+    """
+
+    def __init__(self, database_path: str):
+        """
+        Constructor to initialize the object.
+
+        Parameters:
+        - database_path (str): Path to the SQLite database containing moon data.
+        """
         self.conn = sqlite3.connect(database_path)
         self.load_data()  # Load moon data from the database
         self.define_constants()  # Define constants including gravitational constant and moon mass
 
-    # Destructor to ensure the database connection is closed when the object is deleted
     def __del__(self):
+        """
+        Destructor to ensure the database connection is closed when the object is deleted.
+        """
         self.conn.close()
 
-    # Load moon data from the database
-    def load_data(self):
+    def load_data():
+        """
+        Load moon data from the database.
+        """
         self.data = pd.read_sql_query("SELECT * FROM moons", self.conn)
 
-    # Define constants, including gravitational constant and moon mass
-    def define_constants(self):
+    def define_constants():
+        """
+        Define constants, including gravitational constant and moon mass.
+        """
         self.G = 6.67e-11
         # Calculate moon mass using Kepler's Third Law and add an "estimated_mass" column to the data frame
         self.data["estimated_mass"] = (4 * np.pi**2 * self.data["distance_km"]**3) / (self.data["period_days"]**2 * self.G)
-    
-    # Methods for exploratory analysis:
 
-    # Calculate and display summary statistics for numerical columns
-    def summary_statistics(self):
+    def summary_statistics():
+        """
+        Calculate and display summary statistics for numerical columns.
+        """
         numerical_cols = self.data.select_dtypes(include=['number'])
-        sns.set_theme(style="whitegrid", palette="pastel")  # Set a visually appealing theme
+        sns.set_theme(style="darkgrid")  # Set a visually appealing theme
 
         for col in numerical_cols:
             sns.histplot(data=self.data, x=col)
             plt.title(f"Distribution of {col}")
             plt.show()
 
-    # Calculate and display correlations between numerical columns
-    def correlations(self):
+    def correlations():
+        """
+        Calculate and display correlations between numerical columns.
+        """
         correlations = self.data.corr(numeric_only=True)
         sns.set_theme(style="darkgrid")  # Set a visually appealing theme
 
@@ -58,8 +95,13 @@ class Moons:
         plt.title("Correlation Heatmap")
         plt.show()
 
-    # Provide descriptive information about a specified column
-    def describe_column(self, column_name):
+    def describe_column(column_name: str):
+        """
+        Provide descriptive information about a specified column.
+
+        Parameters:
+        - column_name (str): Name of the column to describe.
+        """
         if column_name in self.data.columns:
             column = self.data[column_name]
 
@@ -79,17 +121,25 @@ class Moons:
         else:
             print("Column not found in the data.")
             
-    def display_moons(self):
+    def display_moons():
+        """
+        Display unique items in the 'moon' column.
+        """
         moons = self.data["moon"].unique()
         print("Moon Items:")
         for moon in moons:
             print(moon)
 
-    # Generate a scatter plot of two specified columns
-    def scatter_plot(self, x_column, y_column):
+    def scatter_plot(x_column: str, y_column: str):
+        """
+        Generate a scatter plot of two specified columns.
+
+        Parameters:
+        - x_column (str): Name of the column for the x-axis.
+        - y_column (str): Name of the column for the y-axis.
+        """
         plt.figure(figsize=(8, 6))  # Set appropriate figure size
         plt.scatter(self.data[x_column], self.data[y_column])
-        sns.regplot(x=self.data[x_column], y=self.data[y_column], scatter=False, color='red')
 
         # Label axes and add title
         plt.xlabel(x_column.capitalize())
@@ -97,17 +147,28 @@ class Moons:
         plt.title(f"Scatter Plot of {y_column} vs. {x_column}")
 
         plt.grid(True)  # Add grid for better readability
-        plt.show()  # Display the plot
+        plt.show()
 
-    # Extract data for a specific moon
-    def extract_moon_data(self, moon):
+    def extract_moon_data(moon: str) -> pd.Series:
+        """
+        Extract data for a specific moon.
+
+        Parameters:
+        - moon (str): Name of the moon.
+
+        Returns:
+        - pd.Series: Data for the specified moon.
+        """
         moon_data = self.data[self.data["moon"] == moon]
-        return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualisation of data
+        return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualization of data
 
-    # Estimation of Jupiter's mass:
+    def prepare_data() -> pd.DataFrame:
+        """
+        Prepare data for modeling.
 
-    # Prepare data for modeling
-    def prepare_data(self):
+        Returns:
+        - pd.DataFrame: Prepared data for modeling.
+        """
         # Calculate T^2 and a^3, handle missing values, and convert units
         self.data["T2"] = (self.data["period_days"] * 24 * 60 * 60) ** 2  # Convert days to seconds
         self.data["a3"] = (self.data["distance_km"] * 1000) ** 3  # Convert km to meters
@@ -117,8 +178,16 @@ class Moons:
         modeling_data = self.data[["moon", "T2", "a3"]]
         return modeling_data
 
-    # Train a linear regression model using train_test_split
-    def train_model(self, modeling_data):
+    def train_model(modeling_data: pd.DataFrame) -> Tuple[LinearRegression, pd.DataFrame, pd.Series]:
+        """
+        Train a linear regression model using train_test_split.
+
+        Parameters:
+        - modeling_data (pd.DataFrame): Data for modeling.
+
+        Returns:
+        - tuple: Trained model, X_test, and y_test.
+        """
         X = modeling_data[["T2"]]
         y = modeling_data["a3"]
         X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)  # Set random_state for reproducibility
@@ -128,8 +197,15 @@ class Moons:
         model.fit(X_train, y_train)
         return model, X_test, y_test  # Return model, X_test, and y_test
 
-    # Evaluate the trained model using test data
-    def evaluate_model(self, model, X_test, y_test):
+    def evaluate_model(model: LinearRegression, X_test: pd.DataFrame, y_test: pd.Series):
+        """
+        Evaluate the trained model using test data.
+
+        Parameters:
+        - model (LinearRegression): Trained linear regression model.
+        - X_test (pd.DataFrame): Test data for the features.
+        - y_test (pd.Series): Test data for the target variable.
+        """
         predictions = model.predict(X_test)
 
         # Calculate evaluation metrics
@@ -140,8 +216,13 @@ class Moons:
         print("Mean Squared Error (testing set):", mse)
         print("R-squared (testing set):", r_squared)
 
-    # Calculate and display estimated Jupiter's mass, differences from literature, and Jupiter-to-Earth mass ratio
-    def estimate_jupiter_mass(self, model):        
+    def estimate_jupiter_mass(model: LinearRegression):
+        """
+        Calculate and display estimated Jupiter's mass, differences from literature, and Jupiter-to-Earth mass ratio.
+
+        Parameters:
+        - model (LinearRegression): Trained linear regression model.
+        """
         jupiter_mass_kg = (4 * (np.pi ** 2)) * model.coef_[0] / self.G
 
         # Comparison with literature value and with Earth
