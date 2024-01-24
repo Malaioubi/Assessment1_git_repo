@@ -77,4 +77,18 @@ class Moons:
         moon_data = self.data[self.data["moon"] == moon]
         return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualization of data
 
+    def scatter_plot(self, x_column, y_column):
+        sns.set_theme(style="whitegrid", palette="pastel")
+        plt.figure(figsize=(8, 6))  # Set appropriate figure size
+        plt.scatter(self.data[x_column], self.data[y_column])
+        sns.regplot(x=self.data[x_column], y=self.data[y_column], scatter=False, color='red')
+
+        # Label axes and add title
+        plt.xlabel(x_column.capitalize())
+        plt.ylabel(y_column.capitalize())
+        plt.title(f"Scatter Plot of {y_column} vs. {x_column}")
+
+        plt.grid(True)  # Add grid for better readability
+        plt.show()
+
 
