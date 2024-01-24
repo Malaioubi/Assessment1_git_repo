@@ -227,8 +227,8 @@ class Moons:
         jupiter_mass_kg = (4 * (np.pi ** 2)) * model.coef_[0] / self.G
 
         # Comparison with literature value and with Earth
-        literature_jupiter_mass_kg = 1.8982e27  # From [Source reference]
-        literature_earth_mass_kg = 5.972e24  # Define Earth's mass in kg
+        literature_jupiter_mass_kg = 1.8982e27  # From ["Planets and Pluto: Physical Characteristics". ssd.jpl.nasa.gov. Jet Propulsion Labritory. Retrieved 31 October 2017.]
+        literature_earth_mass_kg = 5.972e24  # Define Earth's mass in kg, from ["Planets and Pluto: Physical Characteristics". ssd.jpl.nasa.gov. Jet Propulsion Labritory. Retrieved 31 October 2017.]
 
         absolute_difference = abs(jupiter_mass_kg - literature_jupiter_mass_kg)
         percentage_difference = (absolute_difference / literature_jupiter_mass_kg) * 100
