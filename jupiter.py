@@ -19,17 +19,11 @@ class Moons:
         self.conn.close()    
         
     def define_constants(self):
-        """
-        Define constants, including gravitational constant and moon mass.
-        """
         self.G = 6.67e-11
         # Calculate moon mass using Kepler's Third Law and add an "estimated_mass" column to the data frame
         self.data["estimated_mass"] = (4 * np.pi**2 * self.data["distance_km"]**3) / (self.data["period_days"]**2 * self.G)
    
     def summary_statistics(self):
-        """
-        Calculate and display summary statistics for numerical columns.
-        """
         numerical_cols = self.data.select_dtypes(include=['number'])
         sns.set_theme(style="whitegrid", palette="pastel")  # Set a visually appealing theme
 
@@ -39,9 +33,6 @@ class Moons:
             plt.show()
             
     def correlations(self):
-        """
-        Calculate and display correlations between numerical columns.
-        """
         correlations = self.data.corr(numeric_only=True)
         sns.set_theme(style="darkgrid")  # Set a visually appealing theme
 
@@ -57,12 +48,6 @@ class Moons:
         plt.show()
         
     def describe_column(self, column_name):
-        """
-        Provide descriptive information about a specified column.
-
-        Parameters:
-        - column_name (str): Name of the column to describe.
-        """
         if column_name in self.data.columns:
             column = self.data[column_name]
 
@@ -83,11 +68,13 @@ class Moons:
             print("Column not found in the data.")
             
     def display_moons(self):
-        """
-        Display unique items in the 'moon' column.
-        """
         moons = self.data["moon"].unique()
         print("Moon Items:")
         for moon in moons:
             print(moon)
+            
+    def extract_moon_data(self, moon):
+        moon_data = self.data[self.data["moon"] == moon]
+        return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualization of data
+
 
