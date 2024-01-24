@@ -92,4 +92,41 @@ class Moons:
         plt.grid(True)  # Add grid for better readability
         plt.show()
 
+# Estimation of Jupiter's mass:
+
+    # Prepare data for modeling
+    def prepare_data(self):
+        # Calculate T^2 and a^3, handle missing values, and convert units
+        self.data["T2"] = (self.data["period_days"] * 24 * 60 * 60) ** 2  # Convert days to seconds
+        self.data["a3"] = (self.data["distance_km"] * 1000) ** 3  # Convert km to meters
+        self.data = self.data.dropna(subset=["T2", "a3"])  # Drop rows with missing values
+
+        # Create DataFrame for modeling
+        modeling_data = self.data[["moon", "T2", "a3"]]
+        return modeling_data
+        # Train a linear regression model using train_test_split
+    def train_model(self, modeling_data):
+        X = modeling_data[["T2"]]
+        y = modeling_data["a3"]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)  # Set random_state for reproducibility
+
+        # Create and train the model
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+        return model, X_test, y_test  # Return model, X_test, and y_test
+
+    # Evaluate the trained model using test data
+    def evaluate_model(self, model, X_test, y_test):
+        predictions = model.predict(X_test)
+
+        # Calculate evaluation metrics
+        mse = mean_squared_error(y_test, predictions)
+        r_squared = r2_score(y_test, predictions)
+
+        # Print results and visualize residuals (optional)
+        print("Mean Squared Error (testing set):", mse)
+        print("R-squared (testing set):", r_squared)
+
+
+
 
