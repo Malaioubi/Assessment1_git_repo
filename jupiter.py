@@ -34,7 +34,7 @@ class Moons:
         estimate_jupiter_mass(model: LinearRegression)
     """
 
-    def __init__(self, database_path: str):
+    def __init__(self, database_path):
         """
         Constructor to initialize the object.
 
@@ -51,13 +51,13 @@ class Moons:
         """
         self.conn.close()
 
-    def load_data():
+    def load_data(self):
         """
         Load moon data from the database.
         """
         self.data = pd.read_sql_query("SELECT * FROM moons", self.conn)
 
-    def define_constants():
+    def define_constants(self):
         """
         Define constants, including gravitational constant and moon mass.
         """
@@ -65,7 +65,7 @@ class Moons:
         # Calculate moon mass using Kepler's Third Law and add an "estimated_mass" column to the data frame
         self.data["estimated_mass"] = (4 * np.pi**2 * self.data["distance_km"]**3) / (self.data["period_days"]**2 * self.G)
 
-    def summary_statistics():
+    def summary_statistics(self):
         """
         Calculate and display summary statistics for numerical columns.
         """
@@ -77,7 +77,7 @@ class Moons:
             plt.title(f"Distribution of {col}")
             plt.show()
 
-    def correlations():
+    def correlations(self):
         """
         Calculate and display correlations between numerical columns.
         """
@@ -95,7 +95,7 @@ class Moons:
         plt.title("Correlation Heatmap")
         plt.show()
 
-    def describe_column(column_name: str):
+    def describe_column(self, column_name):
         """
         Provide descriptive information about a specified column.
 
@@ -121,7 +121,7 @@ class Moons:
         else:
             print("Column not found in the data.")
             
-    def display_moons():
+    def display_moons(self):
         """
         Display unique items in the 'moon' column.
         """
@@ -130,7 +130,7 @@ class Moons:
         for moon in moons:
             print(moon)
 
-    def scatter_plot(x_column: str, y_column: str):
+    def scatter_plot(self, x_column, y_column):
         """
         Generate a scatter plot of two specified columns.
 
@@ -149,7 +149,7 @@ class Moons:
         plt.grid(True)  # Add grid for better readability
         plt.show()
 
-    def extract_moon_data(moon: str) -> pd.Series:
+    def extract_moon_data(self, moon):
         """
         Extract data for a specific moon.
 
@@ -162,7 +162,7 @@ class Moons:
         moon_data = self.data[self.data["moon"] == moon]
         return moon_data.iloc[0]  # Return the first row if multiple matches and allows for a better visualization of data
 
-    def prepare_data() -> pd.DataFrame:
+    def prepare_data(self):
         """
         Prepare data for modeling.
 
@@ -178,7 +178,7 @@ class Moons:
         modeling_data = self.data[["moon", "T2", "a3"]]
         return modeling_data
 
-    def train_model(modeling_data: pd.DataFrame) -> Tuple[LinearRegression, pd.DataFrame, pd.Series]:
+    def train_model(self, modeling_data):
         """
         Train a linear regression model using train_test_split.
 
@@ -197,7 +197,7 @@ class Moons:
         model.fit(X_train, y_train)
         return model, X_test, y_test  # Return model, X_test, and y_test
 
-    def evaluate_model(model: LinearRegression, X_test: pd.DataFrame, y_test: pd.Series):
+    def evaluate_model(self, model, X_test, y_test):
         """
         Evaluate the trained model using test data.
 
@@ -216,7 +216,7 @@ class Moons:
         print("Mean Squared Error (testing set):", mse)
         print("R-squared (testing set):", r_squared)
 
-    def estimate_jupiter_mass(model: LinearRegression):
+    def estimate_jupiter_mass(self, model):
         """
         Calculate and display estimated Jupiter's mass, differences from literature, and Jupiter-to-Earth mass ratio.
 
@@ -237,4 +237,4 @@ class Moons:
         print("Percentage difference:", percentage_difference, "%")
 
         estimated_jupiter_earth_ratio = jupiter_mass_kg / literature_earth_mass_kg
-        print(f"Estimated Jupiter-to-Earth mass ratio: {estimated_jupiter_earth_ratio:.2f}")   
+        print(f"Estimated Jupiter-to-Earth mass ratio: {estimated_jupiter_earth_ratio:.2f}")    
