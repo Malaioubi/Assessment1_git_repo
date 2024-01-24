@@ -35,7 +35,7 @@ class Moons:
     # Calculate and display summary statistics for numerical columns
     def summary_statistics(self):
         numerical_cols = self.data.select_dtypes(include=['number'])
-        sns.set_theme(style="darkgrid")  # Set a visually appealing theme
+        sns.set_theme(style="whitegrid", palette="pastel")  # Set a visually appealing theme
 
         for col in numerical_cols:
             sns.histplot(data=self.data, x=col)
