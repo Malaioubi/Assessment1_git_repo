@@ -55,4 +55,39 @@ class Moons:
         )
         plt.title("Correlation Heatmap")
         plt.show()
+        
+    def describe_column(self, column_name):
+        """
+        Provide descriptive information about a specified column.
+
+        Parameters:
+        - column_name (str): Name of the column to describe.
+        """
+        if column_name in self.data.columns:
+            column = self.data[column_name]
+
+            # Basic information
+            print("Column Name:", column_name)
+            print("Data Type:", column.dtype)
+            print("Number of Values:", column.count())
+            print("Number of Unique Values:", column.nunique())
+
+            # Descriptive statistics (if numerical)
+            if pd.api.types.is_numeric_dtype(column):
+                print(column.describe())
+            else:
+                # Frequency counts for non-numerical columns
+                print("Most Frequent Values:")
+                print(column.value_counts().head())
+        else:
+            print("Column not found in the data.")
+            
+    def display_moons(self):
+        """
+        Display unique items in the 'moon' column.
+        """
+        moons = self.data["moon"].unique()
+        print("Moon Items:")
+        for moon in moons:
+            print(moon)
 
